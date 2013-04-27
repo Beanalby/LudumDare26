@@ -3,14 +3,24 @@ using System.Collections;
 
 public class PlantRose : Plant {
 
+    private float pulseRange = 1.5f;
+    private float boostAmount = .5f;
+
+    private int plantMask;
      new void Start () {
          base.Start();
-         actionCooldown = 5f;
+         actionCooldown = 1.5f;
          type = PlantType.Medium;
+         plantMask = 1 << LayerMask.NameToLayer("Plant");
     }
 
     public override void DoAction() {
-        Debug.Log(name + " doing special rose thing!");
+        SendBoost();
         StartGrow();
+    }
+    private void SendBoost() {
+        foreach(Collider plant in Physics.OverlapSphere(transform.position, pulseRange, plantMask)) {
+            plant.GetComponent<Plant>().Boost(boostAmount);
+        }
     }
 }

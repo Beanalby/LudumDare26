@@ -46,7 +46,7 @@ public class GardenDriver : MonoBehaviour {
     int groundLayer;
 
     public void Start() {
-        funds = new Currency(4, 0, 0);
+        funds = new Currency(10, 0, 0);
 
         buying = null;
         groundLayer = LayerMask.NameToLayer("Ground");

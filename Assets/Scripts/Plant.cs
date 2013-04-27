@@ -45,6 +45,13 @@ public abstract class Plant : MonoBehaviour {
         transform.position = transform.parent.position;
         ground.plant = this;
     }
-
+    public virtual void Boost(float amount) {
+        // roses don't boost themselves, or other roses
+        if(type != PlantType.Rose) {
+            if(actionStart != -1) {
+                actionStart -= amount;
+            }
+        }
+    }
     public abstract void DoAction();
 }
