@@ -17,6 +17,11 @@ public class Currency {
             && this.water >= item.water
             && this.sun >= item.sun;
     }
+    public static Currency operator +(Currency funds, Currency stuff) {
+        return new Currency(funds.seed + stuff.seed,
+            funds.water + stuff.water,
+            funds.sun + stuff.sun);
+    }
     public static Currency operator -(Currency funds, Currency cost) {
         return new Currency(funds.seed - cost.seed,
             funds.water - cost.water,
@@ -37,28 +42,32 @@ public class GardenDriver : MonoBehaviour {
     private Currency funds;
     Spawnable buying;
 
+    int clickMask;
     int groundLayer;
 
     public void Start() {
         funds = new Currency(4, 0, 0);
 
         buying = null;
-        groundLayer = 1 << LayerMask.NameToLayer("Ground");
+        groundLayer = LayerMask.NameToLayer("Ground");
+        clickMask = 1 << groundLayer | 1 << LayerMask.NameToLayer("Pickup");
     }
 
     public void Update() {
-        if(Input.GetMouseButtonDown(0) && buying != null) {
+        if(Input.GetMouseButtonDown(0)) {
             // see if we're over ground
-            Debug.Log("Shooting ray at layer " + groundLayer);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(Physics.Raycast(ray, out hit, groundLayer)) {
-                Debug.Log("Hit " + hit.collider.name);
-                if(funds.canAfford(buying.cost)) {
-                    funds -= buying.cost;
-                    GameObject obj = Instantiate(buying.prefab) as GameObject;
-                    obj.GetComponent<Plant>().Attach(hit.collider.GetComponent<Ground>());
-                    buying = null;
+            if(Physics.Raycast(ray, out hit, Mathf.Infinity, clickMask)) {
+                if(hit.collider.gameObject.layer == groundLayer) {
+                    if(buying != null && funds.canAfford(buying.cost)) {
+                        funds -= buying.cost;
+                        GameObject obj = Instantiate(buying.prefab) as GameObject;
+                        obj.GetComponent<Plant>().Attach(hit.collider.GetComponent<Ground>());
+                        buying = null;
+                    }
+                } else {
+                    hit.collider.gameObject.SendMessage("Clicked");
                 }
             }
         }
@@ -72,15 +81,19 @@ public class GardenDriver : MonoBehaviour {
             GUI.enabled = funds.canAfford(s.cost);
             if(GUI.Button(new Rect(0, pos, 200, buttonSize), msg)) {
                 if(buying == s) {
-                    Debug.Log("Clearing buying");
                     buying = null;
                 } else {
-                    Debug.Log("Buying " + s.type);
                     buying = s;
                 }
             }
             pos += buttonSize;
         }
+        GUI.enabled = true;
+        GUI.Label(new Rect(Screen.width - 100, 0, 100, 25), "Seeds: " + funds.seed);
+    }
+
+    public void AddFunds(Currency stuff) {
+        funds = funds + stuff;
     }
     public Spawnable getSpawnable(PlantType type) {
         foreach(Spawnable s in spawnables) {
