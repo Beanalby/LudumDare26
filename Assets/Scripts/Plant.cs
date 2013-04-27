@@ -10,7 +10,6 @@ public abstract class Plant : MonoBehaviour {
     private float actionStart=-1;
     protected ProgressCircle pc;
 
-    [HideInInspector]
     public PlantType type;
 
     public void Start() {

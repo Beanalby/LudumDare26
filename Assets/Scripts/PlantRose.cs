@@ -10,7 +10,6 @@ public class PlantRose : Plant {
      new void Start () {
          base.Start();
          actionCooldown = 1.5f;
-         type = PlantType.Medium;
          plantMask = 1 << LayerMask.NameToLayer("Plant");
     }
 

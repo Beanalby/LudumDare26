@@ -9,7 +9,6 @@ public class PlantTiny : Plant {
     new void Start () {
         base.Start();
         actionCooldown = 5f;
-        type = PlantType.Medium;
         seedPoint = transform.Find("SeedPoint");
     }
 
