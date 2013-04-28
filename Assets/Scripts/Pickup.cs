@@ -9,6 +9,7 @@ public class Pickup : MonoBehaviour {
 
     public PickupType type;
     public Currency value;
+    public AudioClip pickupSound;
     private float spinSpeed = 100f;
 
     public pickupEventHandler pickupListeners;
@@ -24,6 +25,9 @@ public class Pickup : MonoBehaviour {
         driver.AddFunds(value);
         if(pickupListeners != null) {
             pickupListeners(this);
+        }
+        if (pickupSound) {
+            AudioSource.PlayClipAtPoint(pickupSound, Camera.main.transform.position);
         }
         Destroy(gameObject);
     }

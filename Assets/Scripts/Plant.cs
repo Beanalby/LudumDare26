@@ -5,6 +5,8 @@ public enum PlantType { None, Tiny, Medium, Flower };
 
 public abstract class Plant : MonoBehaviour {
 
+    public AudioClip actionSound;
+
     protected float actionCooldown;
 
     private float actionStart=-1;
@@ -22,11 +24,14 @@ public abstract class Plant : MonoBehaviour {
     }
 
     public void Grow() {
-        if(actionStart == -1) {
+        if(actionStart == -1 || GameDriver.instance.IsGardenComplete) {
             return;
         }
         if(actionStart + actionCooldown <= Time.time) {
             actionStart = -1;
+            if (actionSound) {
+                AudioSource.PlayClipAtPoint(actionSound, Camera.main.transform.position);
+            }
             DoAction();
             pc.Percent = 0;
         } else {

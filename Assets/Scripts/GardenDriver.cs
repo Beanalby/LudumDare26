@@ -32,11 +32,18 @@ public class Currency {
 
 public class GardenDriver : MonoBehaviour {
 
+    public AudioClip plantAtached;
+
     private Currency funds;
     Spawnable buying;
+    private float spinSpeed = 2f;
 
+    private float gardenCompleteStart = -1;
     int clickMask;
     int groundLayer;
+    private Material whiteout;
+    private float levelStart;
+    private float fadeinDuration = 1f;
 
     public void Start() {
         funds = new Currency(10, 0, 0);
@@ -44,25 +51,46 @@ public class GardenDriver : MonoBehaviour {
         buying = null;
         groundLayer = LayerMask.NameToLayer("Ground");
         clickMask = 1 << groundLayer | 1 << LayerMask.NameToLayer("Pickup");
+        whiteout = transform.FindChild("Whiteout").renderer.material;
+        whiteout.color = new Color(1, 1, 1, 1);
+        levelStart = Time.time;
     }
 
     public void Update() {
-        if(Input.GetMouseButtonDown(0)) {
-            // see if we're over ground
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit, Mathf.Infinity, clickMask)) {
-                if(hit.collider.gameObject.layer == groundLayer) {
-                    if(buying != null && funds.canAfford(buying.cost)) {
-                        SpawnPlant(hit.collider.gameObject);
-                    }
+        if (gardenCompleteStart == -1) {
+            if (fadeinDuration != -1) {
+                float percent = Time.time - levelStart;
+                if (percent >= 1) {
+                    whiteout.color = new Color(1, 1, 1, 0);
+                    fadeinDuration = -1;
                 } else {
-                    hit.collider.gameObject.SendMessage("Clicked");
+                    whiteout.color = new Color(1, 1, 1, 1 - percent);
                 }
             }
+            if (Input.GetMouseButtonDown(0)) {
+                // see if we're over ground
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickMask)) {
+                    if (hit.collider.gameObject.layer == groundLayer) {
+                        if (buying != null && funds.canAfford(buying.cost)) {
+                            SpawnPlant(hit.collider.gameObject);
+                        }
+                    } else {
+                        hit.collider.gameObject.SendMessage("Clicked");
+                    }
+                }
+            }
+        } else {
+            float percent = (Time.time - gardenCompleteStart) / GameDriver.instance.gardenCompleteDuration;
+            whiteout.color = new Color(1, 1, 1, percent);
+            transform.RotateAround(Vector3.zero, Vector3.up, -(Time.time - gardenCompleteStart) * spinSpeed);
         }
     }
     public void OnGUI() {
+        if (gardenCompleteStart != -1) {
+            return;
+        }
         int pos = 0;
         int buttonSize = 25;
         foreach(Spawnable s in GameConfig.instance.spawnables) {
@@ -74,6 +102,7 @@ public class GardenDriver : MonoBehaviour {
                     buying = null;
                 } else {
                     buying = s;
+                    AudioSource.PlayClipAtPoint(s.selected, Camera.main.transform.position);
                 }
             }
             pos += buttonSize;
@@ -96,6 +125,7 @@ public class GardenDriver : MonoBehaviour {
         plant.Attach(ground.GetComponent<Ground>());
         GameDriver.instance.PlantSpawned(plant.type);
         buying = null;
+        AudioSource.PlayClipAtPoint(plantAtached, Camera.main.transform.position);
     }
     public void AddFunds(Currency stuff) {
         funds = funds + stuff;
@@ -107,5 +137,8 @@ public class GardenDriver : MonoBehaviour {
             }
         }
         return null;
+    }
+    public void GardenComplete() {
+        gardenCompleteStart = Time.time;
     }
 }

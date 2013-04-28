@@ -8,6 +8,7 @@ public class Spawnable {
     public PlantType type;
     public GameObject prefab;
     public Currency cost;
+    public AudioClip selected;
 }
 
 public class LevelInfo {

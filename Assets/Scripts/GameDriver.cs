@@ -6,9 +6,14 @@ using System.Collections.Generic;
 public class GameDriver : MonoBehaviour {
 
     public static GameDriver instance;
+    public AudioClip gardenComplete;
+
+    public bool IsGardenComplete;
+    public float gardenCompleteDuration = 3;
 
     public LevelInfo currentLevel;
     Dictionary<PlantType, int> plants;
+    private GameObject gardenDriver;
 
     void Start() {
         if(instance != null) {
@@ -21,12 +26,17 @@ public class GameDriver : MonoBehaviour {
         if(currentLevel == null) {
             currentLevel = GameConfig.instance.levels[0];
         }
-        plants = new Dictionary<PlantType, int>();
+        InitLevel();
     }
     public void OnLevelWasLoaded() {
-        plants = new Dictionary<PlantType, int>();
+        InitLevel();
     }
 
+    void InitLevel() {
+        IsGardenComplete = false;
+        plants = new Dictionary<PlantType, int>();
+        gardenDriver = GameObject.Find("GardenCam");
+    }
     bool IsAllComplete() {
         foreach(LevelInfo level in GameConfig.instance.levels) {
             if(!level.isComplete) {
@@ -35,16 +45,24 @@ public class GameDriver : MonoBehaviour {
         }
         return true;
     }
+    public IEnumerator GardenComplete() {
+        // let the sound effect for planting finish
+        yield return new WaitForSeconds(.5f);
+        gardenDriver.SendMessage("GardenComplete");
+        IsGardenComplete = true;
+        AudioSource.PlayClipAtPoint(gardenComplete, Camera.main.transform.position);
+        yield return new WaitForSeconds(gardenCompleteDuration);
+        currentLevel.isComplete = true;
+        currentLevel = null;
+        if(IsAllComplete()) {
+            Application.LoadLevel("Finish");
+        } else {
+            Application.LoadLevel("StageSelect");
+        }
+    }
     void CheckLevelComplete() {
         if(IsLevelComplete()) {
-            Debug.Log("Loading next level!");
-            currentLevel.isComplete = true;
-            currentLevel = null;
-            if(IsAllComplete()) {
-                Application.LoadLevel("Finish");
-            } else {
-                Application.LoadLevel("StageSelect");
-            }
+            StartCoroutine(GardenComplete());
         }
     }
     bool IsLevelComplete() {
