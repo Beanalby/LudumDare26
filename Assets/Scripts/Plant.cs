@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public enum PlantType { None, Tiny, Medium, Rose };
+public enum PlantType { None, Tiny, Medium, Flower };
 
 public abstract class Plant : MonoBehaviour {
 
@@ -45,8 +45,8 @@ public abstract class Plant : MonoBehaviour {
         ground.plant = this;
     }
     public virtual void Boost(float amount) {
-        // roses don't boost themselves, or other roses
-        if(type != PlantType.Rose) {
+        // flowers don't boost themselves, or other flowers
+        if(type != PlantType.Flower) {
             if(actionStart != -1) {
                 actionStart -= amount;
             }

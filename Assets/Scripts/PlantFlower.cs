@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlantRose : Plant {
+public class PlantFlower : Plant {
 
     private float pulseRange = 1.5f;
     private float boostAmount = .5f;
