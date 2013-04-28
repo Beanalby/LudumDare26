@@ -9,8 +9,15 @@ public class Pickup : MonoBehaviour {
 
     public PickupType type;
     public Currency value;
-    
+    private float spinSpeed = 100f;
+
     public pickupEventHandler pickupListeners;
+
+    public void Update() {
+        Vector3 angles = transform.localRotation.eulerAngles;
+        angles.y += spinSpeed * Time.deltaTime;
+        transform.localRotation = Quaternion.Euler(angles);
+    }
 
     public void Clicked() {
         GardenDriver driver = GameObject.FindObjectOfType(typeof(GardenDriver)) as GardenDriver;

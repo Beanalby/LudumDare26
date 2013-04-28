@@ -21,6 +21,7 @@ public class GameDriver : MonoBehaviour {
         if(currentLevel == null) {
             currentLevel = GameConfig.instance.levels[0];
         }
+        plants = new Dictionary<PlantType, int>();
     }
     public void OnLevelWasLoaded() {
         plants = new Dictionary<PlantType, int>();
