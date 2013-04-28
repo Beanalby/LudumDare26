@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 [Serializable]
 public class Currency {
@@ -79,6 +80,14 @@ public class GardenDriver : MonoBehaviour {
         }
         GUI.enabled = true;
         GUI.Label(new Rect(Screen.width - 100, 0, 100, 25), "Seeds: " + funds.seed);
+
+        string target = "target: ";
+        if(GameDriver.instance.currentLevel != null) {
+            foreach(KeyValuePair<PlantType, int> pair in GameDriver.instance.currentLevel.target) {
+                target += pair.Key + " (" + pair.Value + ") ";
+            }
+            GUI.Label(new Rect(0, Screen.height - 50, Screen.width, 50), target);
+        }
     }
 
     public void SpawnPlant(GameObject ground) {
