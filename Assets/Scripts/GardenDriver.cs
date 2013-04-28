@@ -29,16 +29,8 @@ public class Currency {
     }
 }
 
-[Serializable]
-public class Spawnable {
-    public PlantType type;
-    public GameObject prefab;
-    public Currency cost;
-}
-
 public class GardenDriver : MonoBehaviour {
 
-    public Spawnable[] spawnables;
     private Currency funds;
     Spawnable buying;
 
@@ -72,7 +64,7 @@ public class GardenDriver : MonoBehaviour {
     public void OnGUI() {
         int pos = 0;
         int buttonSize = 25;
-        foreach(Spawnable s in spawnables) {
+        foreach(Spawnable s in GameConfig.instance.spawnables) {
             string msg = "Buy + " + s.type + "(" + s.cost.seed + ", "
                 + s.cost.sun + ", " + s.cost.water + ")";
             GUI.enabled = funds.canAfford(s.cost);
@@ -100,7 +92,7 @@ public class GardenDriver : MonoBehaviour {
         funds = funds + stuff;
     }
     public Spawnable getSpawnable(PlantType type) {
-        foreach(Spawnable s in spawnables) {
+        foreach(Spawnable s in GameConfig.instance.spawnables) {
             if(s.type == type) {
                 return s;
             }

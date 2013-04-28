@@ -1,15 +1,13 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class LevelInfo {
-    public Dictionary<PlantType, int> target;
-}
 public class GameDriver : MonoBehaviour {
 
     public static GameDriver instance;
 
-    LevelInfo currentLevel;
+    public LevelInfo currentLevel;
     Dictionary<PlantType, int> plants;
 
     void Start() {
@@ -20,21 +18,35 @@ public class GameDriver : MonoBehaviour {
         instance = this;
         DontDestroyOnLoad(gameObject);
 
-        currentLevel = new LevelInfo();
-        currentLevel.target = new Dictionary<PlantType, int>()
-            { { PlantType.Tiny, 2 }, { PlantType.Medium, 2 } };
-        //currentLevel.target[PlantType.Tiny] = 2;
-        //currentLevel.target[PlantType.Medium] = 2;
-
+        if(currentLevel == null) {
+            currentLevel = GameConfig.instance.levels[0];
+        }
+    }
+    public void OnLevelWasLoaded() {
         plants = new Dictionary<PlantType, int>();
     }
 
-    void CheckComplete() {
-        if(IsComplete()) {
+    bool IsAllComplete() {
+        foreach(LevelInfo level in GameConfig.instance.levels) {
+            if(!level.isComplete) {
+                return false;
+            }
+        }
+        return true;
+    }
+    void CheckLevelComplete() {
+        if(IsLevelComplete()) {
             Debug.Log("Loading next level!");
+            currentLevel.isComplete = true;
+            currentLevel = null;
+            if(IsAllComplete()) {
+                Application.LoadLevel("Finish");
+            } else {
+                Application.LoadLevel("StageSelect");
+            }
         }
     }
-    bool IsComplete() {
+    bool IsLevelComplete() {
         foreach(KeyValuePair<PlantType, int> pair in currentLevel.target) {
             if(!plants.ContainsKey(pair.Key)) {
                 return false;
@@ -45,13 +57,15 @@ public class GameDriver : MonoBehaviour {
         }
         return true;
     }
-
+    public void LoadLevel(LevelInfo level) {
+        currentLevel = level;
+        Application.LoadLevel("Garden");
+    }
     public void PlantSpawned(PlantType type) {
         if(!plants.ContainsKey(type)) {
             plants[type] = 0;
         }
         plants[type]++;
-        CheckComplete();
+        CheckLevelComplete();
     }
-
 }
