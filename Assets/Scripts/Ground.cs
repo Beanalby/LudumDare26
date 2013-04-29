@@ -17,4 +17,7 @@ public class Ground : MonoBehaviour {
     public Transform getPlantPoint() {
         return transform.FindChild("PlantPoint").transform;
     }
+    public bool IsPlantable(PlantType type) {
+        return plant == null;
+    }
 }

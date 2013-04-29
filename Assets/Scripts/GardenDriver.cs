@@ -73,7 +73,7 @@ public class GardenDriver : MonoBehaviour {
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickMask)) {
                     if (hit.collider.gameObject.layer == groundLayer) {
-                        if (buying != null && funds.canAfford(buying.cost)) {
+                        if (buying != null) {
                             SpawnPlant(hit.collider.gameObject);
                         }
                     } else {
@@ -134,6 +134,12 @@ public class GardenDriver : MonoBehaviour {
     }
 
     public void SpawnPlant(GameObject ground) {
+        if (!funds.canAfford(buying.cost)) {
+            return;
+        }
+        if (!ground.GetComponent<Ground>().IsPlantable(buying.type)) {
+            return;
+        }
         funds -= buying.cost;
         Plant plant = (Instantiate(buying.prefab) as GameObject).GetComponent<Plant>();
         plant.Attach(ground.GetComponent<Ground>());
