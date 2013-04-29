@@ -39,6 +39,7 @@ public class GardenDriver : MonoBehaviour {
     Spawnable buying;
     private float spinSpeed = 2f;
 
+    private UnityEngine.GameObject[] grounds;
     private float gardenCompleteStart = -1;
     int clickMask;
     int groundLayer;
@@ -47,13 +48,19 @@ public class GardenDriver : MonoBehaviour {
     private float fadeinDuration = 1f;
 
     public void Start() {
-        funds = GameDriver.instance.currentLevel.startingFunds;
+        if (GameDriver.instance.currentLevel == null) {
+            funds = new Currency(0, 0, 0);
+        } else {
+            funds = GameDriver.instance.currentLevel.startingFunds;
+        }
         buying = null;
         groundLayer = LayerMask.NameToLayer("Ground");
         clickMask = 1 << groundLayer | 1 << LayerMask.NameToLayer("Pickup");
         whiteout = transform.FindChild("Whiteout").renderer.material;
         whiteout.color = new Color(1, 1, 1, 1);
         levelStart = Time.time;
+        //grounds = Resources.FindObjectsOfTypeAll(typeof(Ground)) as GameObject[];
+        grounds = GameObject.FindGameObjectsWithTag("Ground");
     }
 
     public void Update() {
@@ -108,9 +115,11 @@ public class GardenDriver : MonoBehaviour {
             if(GUI.Button(new Rect(0, pos, 250, buttonSize), msg)) {
                 if(buying == s) {
                     buying = null;
+                    ClearPlantableEffect();
                 } else {
                     buying = s;
                     AudioSource.PlayClipAtPoint(s.selected, Camera.main.transform.position);
+                    SetPlantableEffect(s.type);
                 }
             }
             pos += buttonSize;
@@ -133,6 +142,16 @@ public class GardenDriver : MonoBehaviour {
         }
     }
 
+    public void SetPlantableEffect(PlantType type) {
+        foreach (GameObject ground in grounds) {
+            ground.SendMessage("SetPlantableEffect", type);
+        }
+    }
+    public void ClearPlantableEffect() {
+        foreach (GameObject ground in grounds) {
+            ground.SendMessage("ClearPlantableEffect", SendMessageOptions.RequireReceiver);
+        }
+    }
     public void SpawnPlant(GameObject ground) {
         if (!funds.canAfford(buying.cost)) {
             return;
@@ -145,6 +164,7 @@ public class GardenDriver : MonoBehaviour {
         plant.Attach(ground.GetComponent<Ground>());
         GameDriver.instance.PlantSpawned(plant.type);
         buying = null;
+        ClearPlantableEffect();
         AudioSource.PlayClipAtPoint(plantAtached, Camera.main.transform.position);
     }
     public void AddFunds(Currency stuff) {
