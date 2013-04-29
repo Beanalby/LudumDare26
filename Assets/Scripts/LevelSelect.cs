@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LevelSelect : MonoBehaviour {
 
+    public GUISkin skin;
     public AudioClip levelSelected;
 
     private float fadeDuration = 1f;
@@ -37,19 +39,33 @@ public class LevelSelect : MonoBehaviour {
         }
     }
     public void OnGUI() {
+        GUI.skin = skin;
         if (levelSelectedStart != -1) {
             return;
         }
         int offset = 0;
-        int buttonHeight = 30;
+        int buttonHeight = 50;
+        int count = 1;
         foreach(LevelInfo level in GameConfig.instance.levels) {
             GUI.enabled = !level.isComplete;
-            if(GUI.Button(new Rect(0, offset, 100, buttonHeight), "Level " + offset)) {
+            string desc = "stage " + count + ": plant ";
+            bool firstItem = true;
+            foreach(KeyValuePair<PlantType, int> pair in level.target) {
+                if (firstItem) {
+                    firstItem = false;
+                } else {
+                    desc += ", ";
+                }
+                desc += pair.Value + " " + pair.Key;
+            }
+
+            if(GUI.Button(new Rect(0, offset, 350, buttonHeight), desc)) {
                 selectedLevel = level;
                 levelSelectedStart = Time.time;
                 AudioSource.PlayClipAtPoint(levelSelected, Camera.main.transform.position);
             }
             offset += buttonHeight;
+            count++;
         }
     }
 }

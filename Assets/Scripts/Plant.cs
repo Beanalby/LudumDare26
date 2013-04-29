@@ -6,6 +6,7 @@ public enum PlantType { None, Tiny, Medium, Flower };
 public abstract class Plant : MonoBehaviour {
 
     public AudioClip actionSound;
+    public GameObject actionEffect;
 
     protected float actionCooldown;
 
@@ -33,6 +34,12 @@ public abstract class Plant : MonoBehaviour {
                 AudioSource.PlayClipAtPoint(actionSound, Camera.main.transform.position);
             }
             DoAction();
+            if (actionEffect) {
+                GameObject obj = Instantiate(actionEffect) as GameObject;
+                Vector3 pos = transform.position;
+                pos.y += .02f;
+                obj.transform.position = pos;
+            }
             pc.Percent = 0;
         } else {
             pc.Percent = (Time.time - actionStart) / actionCooldown;

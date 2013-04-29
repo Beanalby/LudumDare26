@@ -9,7 +9,7 @@ public class TitleDriver : MonoBehaviour {
     private float fadeDuration = 1f;
     private Material whiteout;
     float start;
-    float fadeDelay = 2f;
+    float fadeDelay = 1.5f;
 
     // Use this for initialization
     void Start () {

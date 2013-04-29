@@ -32,6 +32,7 @@ public class Currency {
 
 public class GardenDriver : MonoBehaviour {
 
+    public GUISkin skin;
     public AudioClip plantAtached;
 
     private Currency funds;
@@ -91,13 +92,18 @@ public class GardenDriver : MonoBehaviour {
         if (gardenCompleteStart != -1) {
             return;
         }
+        GUI.skin = skin;
         int pos = 0;
-        int buttonSize = 25;
+        int buttonSize = 40;
         foreach(Spawnable s in GameConfig.instance.spawnables) {
-            string msg = "Buy + " + s.type + "(" + s.cost.seed + ", "
-                + s.cost.sun + ", " + s.cost.water + ")";
+            string msg = "Plant " + s.type;
+            if (s.cost.seed == 1) {
+                msg += " (" + s.cost.seed + "seed)";
+            } else {
+                msg += " (" + s.cost.seed + "seeds)";
+            }
             GUI.enabled = funds.canAfford(s.cost);
-            if(GUI.Button(new Rect(0, pos, 200, buttonSize), msg)) {
+            if(GUI.Button(new Rect(0, pos, 250, buttonSize), msg)) {
                 if(buying == s) {
                     buying = null;
                 } else {
@@ -108,12 +114,18 @@ public class GardenDriver : MonoBehaviour {
             pos += buttonSize;
         }
         GUI.enabled = true;
-        GUI.Label(new Rect(Screen.width - 100, 0, 100, 25), "Seeds: " + funds.seed);
+        GUI.Label(new Rect(Screen.width - 200, 0, 200, 100), "Seeds: " + funds.seed);
 
         string target = "target: ";
         if(GameDriver.instance.currentLevel != null) {
+            bool firstItem = true;
             foreach(KeyValuePair<PlantType, int> pair in GameDriver.instance.currentLevel.target) {
-                target += pair.Key + " (" + pair.Value + ") ";
+                if (firstItem) {
+                    firstItem = false;
+                } else {
+                    target += ", ";
+                }
+                target += pair.Value + " " + pair.Key;
             }
             GUI.Label(new Rect(0, Screen.height - 50, Screen.width, 50), target);
         }
