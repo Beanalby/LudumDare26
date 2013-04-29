@@ -3,6 +3,8 @@ using System.Collections;
 
 public class LevelSelect : MonoBehaviour {
 
+    public AudioClip levelSelected;
+
     private float fadeDuration = 1f;
     private float levelSelectedStart = -1f;
     private LevelInfo selectedLevel;
@@ -45,6 +47,7 @@ public class LevelSelect : MonoBehaviour {
             if(GUI.Button(new Rect(0, offset, 100, buttonHeight), "Level " + offset)) {
                 selectedLevel = level;
                 levelSelectedStart = Time.time;
+                AudioSource.PlayClipAtPoint(levelSelected, Camera.main.transform.position);
             }
             offset += buttonHeight;
         }
