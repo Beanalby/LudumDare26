@@ -8,7 +8,7 @@ public class PlantMedium : Plant {
 
     new void Start () {
         base.Start();
-        actionCooldown = 2f;
+        actionCooldown = 7f;
         seedPoint = transform.Find("SeedPoint");
     }
 
