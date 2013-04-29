@@ -8,7 +8,7 @@ public class PlantTiny : Plant {
 
     new void Start () {
         base.Start();
-        actionCooldown = 3f;
+        actionCooldown = 8f;
         seedPoint = transform.Find("SeedPoint");
     }
 
