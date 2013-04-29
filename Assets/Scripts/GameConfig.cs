@@ -15,14 +15,16 @@ public class LevelInfo {
     public Dictionary<PlantType, int> target;
     public Currency startingFunds;
     public bool isComplete;
-    
-    public LevelInfo(Dictionary<PlantType, int> target) : this(target, new Currency(0,0,0)) {
-    }
+    public List<PlantType> disabled;
 
-    public LevelInfo(Dictionary<PlantType, int> target, Currency startingFunds) {
+    public LevelInfo(Dictionary<PlantType, int> target) : this(target, new Currency(0,0,0), new PlantType[] {}) { }
+    public LevelInfo(Dictionary<PlantType, int> target, PlantType[] disabled): this(target, new Currency(0, 0, 0), disabled) { }
+    public LevelInfo(Dictionary<PlantType, int> target, Currency funds): this(target, funds, new PlantType[] {}){ }
+    public LevelInfo(Dictionary<PlantType, int> target, Currency startingFunds, PlantType[] disabled) {
         this.target = target;
         this.startingFunds = startingFunds;
         isComplete = false;
+        this.disabled = new List<PlantType>(disabled);
     }
 }
 
@@ -41,12 +43,17 @@ public class GameConfig : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         levels = new LevelInfo[] {
-            new LevelInfo(new Dictionary<PlantType,int>() {
-                { PlantType.Tiny, 1 } }),
-            new LevelInfo(new Dictionary<PlantType,int>() {
-                { PlantType.Tiny, 2}, {PlantType.Medium, 2} })
+            new LevelInfo(
+                new Dictionary<PlantType,int>() { { PlantType.Tiny, 3 } },
+                new Currency(1, 0, 0),
+                new PlantType[] { PlantType.Medium, PlantType.Flower }),
+            new LevelInfo(
+                new Dictionary<PlantType,int>() { { PlantType.Tiny, 2}, {PlantType.Medium, 2}},
+                new Currency(2, 0, 0),
+                new PlantType[] { PlantType.Flower }),
+            new LevelInfo(
+                new Dictionary<PlantType,int>() { {PlantType.Flower, 3}, {PlantType.Medium, 2}},
+                new Currency(4, 0, 0))
         };
-
-
     }
 }

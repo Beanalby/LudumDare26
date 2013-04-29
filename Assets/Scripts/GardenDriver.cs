@@ -47,8 +47,7 @@ public class GardenDriver : MonoBehaviour {
     private float fadeinDuration = 1f;
 
     public void Start() {
-        funds = new Currency(10, 0, 0);
-
+        funds = GameDriver.instance.currentLevel.startingFunds;
         buying = null;
         groundLayer = LayerMask.NameToLayer("Ground");
         clickMask = 1 << groundLayer | 1 << LayerMask.NameToLayer("Pickup");
@@ -96,6 +95,9 @@ public class GardenDriver : MonoBehaviour {
         int pos = 0;
         int buttonSize = 40;
         foreach(Spawnable s in GameConfig.instance.spawnables) {
+            if(GameDriver.instance.currentLevel.disabled.Contains(s.type)) {
+                continue;
+            }
             string msg = "Plant " + s.type;
             if (s.cost.seed == 1) {
                 msg += " (" + s.cost.seed + "seed)";
