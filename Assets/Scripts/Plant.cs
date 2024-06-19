@@ -16,7 +16,7 @@ public abstract class Plant : MonoBehaviour {
     public PlantType type;
 
     public void Start() {
-        pc = transform.FindChild("ProgressCircle").GetComponent<ProgressCircle>();
+        pc = transform.Find("ProgressCircle").GetComponent<ProgressCircle>();
         pc.Percent = 0;
         actionStart = Time.time;
     }

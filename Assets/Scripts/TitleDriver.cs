@@ -13,7 +13,7 @@ public class TitleDriver : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        whiteout = transform.FindChild("Whiteout").renderer.material;
+        whiteout = transform.Find("Whiteout").GetComponent<Renderer>().material;
         whiteout.color = new Color(1, 1, 1, 0);
         start = Time.time;
         AudioSource.PlayClipAtPoint(titleSound, Camera.main.transform.position);

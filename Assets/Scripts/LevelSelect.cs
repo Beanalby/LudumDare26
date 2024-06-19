@@ -14,7 +14,7 @@ public class LevelSelect : MonoBehaviour {
     private Material whiteout;
 
     public void Start() {
-        whiteout = transform.FindChild("Whiteout").renderer.material;
+        whiteout = transform.Find("Whiteout").GetComponent<Renderer>().material;
         start = Time.time;
         levelSelectedStart = -1;
         whiteout.color = new Color(1, 1, 1, 1);
@@ -60,6 +60,7 @@ public class LevelSelect : MonoBehaviour {
             }
 
             if(GUI.Button(new Rect(0, offset, 350, buttonHeight), desc)) {
+                Debug.Log("Clicked on " + level.ToString());
                 selectedLevel = level;
                 levelSelectedStart = Time.time;
                 AudioSource.PlayClipAtPoint(levelSelected, Camera.main.transform.position);
@@ -67,5 +68,8 @@ public class LevelSelect : MonoBehaviour {
             offset += buttonHeight;
             count++;
         }
+        /* leave GUI enabled, otherwise last button disabled makes all
+         * buttons unclickable */
+        GUI.enabled = true;
     }
 }

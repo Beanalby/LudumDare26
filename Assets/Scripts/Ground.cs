@@ -21,7 +21,7 @@ public class Ground : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-        plantable = transform.FindChild("Plantable");
+        plantable = transform.Find("Plantable");
         plantable.gameObject.SetActive(false);
     }
     
@@ -33,7 +33,7 @@ public class Ground : MonoBehaviour {
         }
     }
     public Transform getPlantPoint() {
-        return transform.FindChild("PlantPoint").transform;
+        return transform.Find("PlantPoint").transform;
     }
     public bool IsPlantable(PlantType type) {
         return plant == null;

@@ -7,7 +7,7 @@ public class Finished : MonoBehaviour {
     public float fadeDuration = 1f;
     private Material whiteout;
     public void Start() {
-        whiteout = transform.FindChild("Whiteout").renderer.material;
+        whiteout = transform.Find("Whiteout").GetComponent<Renderer>().material;
         start = Time.time;
         whiteout.color = new Color(1, 1, 1, 1);
     }

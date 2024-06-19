@@ -56,7 +56,7 @@ public class GardenDriver : MonoBehaviour {
         buying = null;
         groundLayer = LayerMask.NameToLayer("Ground");
         clickMask = 1 << groundLayer | 1 << LayerMask.NameToLayer("Pickup");
-        whiteout = transform.FindChild("Whiteout").renderer.material;
+        whiteout = transform.Find("Whiteout").GetComponent<Renderer>().material;
         whiteout.color = new Color(1, 1, 1, 1);
         levelStart = Time.time;
         //grounds = Resources.FindObjectsOfTypeAll(typeof(Ground)) as GameObject[];
@@ -91,7 +91,7 @@ public class GardenDriver : MonoBehaviour {
         } else {
             float percent = (Time.time - gardenCompleteStart) / GameDriver.instance.gardenCompleteDuration;
             whiteout.color = new Color(1, 1, 1, percent);
-            transform.RotateAround(Vector3.zero, Vector3.up, -(Time.time - gardenCompleteStart) * spinSpeed);
+            transform.RotateAround(Vector3.zero, Vector3.up, -(Mathf.Max(0, (Time.time - (gardenCompleteStart+1f)))) * spinSpeed);
         }
     }
     public void OnGUI() {
